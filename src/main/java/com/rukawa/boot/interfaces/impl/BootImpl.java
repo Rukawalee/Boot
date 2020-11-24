@@ -4,6 +4,7 @@ import com.rukawa.boot.configuration.ShellConfiguration;
 import com.rukawa.boot.enumeration.OSEnum;
 import com.rukawa.boot.interfaces.IBoot;
 import com.rukawa.common.util.BeanUtil;
+import com.rukawa.common.util.StringUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,8 +15,19 @@ public class BootImpl implements IBoot {
     private ShellConfiguration shellConfiguration = ShellConfiguration.getShellConfiguration();
 
     @Override
-    public void restart(String shellName) throws FileNotFoundException {
-        restart(shellName, null);
+    public void restartByParams(String... args) throws FileNotFoundException {
+        OSEnum osEnum = OSEnum.getOSEnum(System.getProperty("os.name"));
+        switch (osEnum) {
+            case LINUX:
+                restart(StringUtil.substringByLastKey(shellConfiguration.getLinux(), ".sh"), args);
+                break;
+            case WINDOWS:
+                String windows = shellConfiguration.getWindows();
+                windows = StringUtil.substringByLastKey(windows, ".bat");
+                windows = StringUtil.substringByLastKey(windows, ".cmd");
+                restart(windows, args);
+                break;
+        }
     }
 
     @Override
@@ -44,6 +56,7 @@ public class BootImpl implements IBoot {
                 break;
         }
         shellCommand.append(fileName)
+                .append(" ")
                 .append(BeanUtil.isEmpty(args) ? "" : String.join(" ", args));
         File file = new File(fileName);
         if (!file.exists()) {

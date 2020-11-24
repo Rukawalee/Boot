@@ -44,21 +44,36 @@
 
    ```java
    /**
-   * 重启
-   *
-   * @param shellName 没有后缀的脚本名
-   * @throws FileNotFoundException 文件不存在异常
-   */
-   void restart(String shellName) throws FileNotFoundException;
+        * 使用配置文件带参数重启
+        *
+        * @param args 传递给脚本的参数
+        * @throws FileNotFoundException 文件不存在异常
+        */
+   void restartByParams(String... args) throws FileNotFoundException;
    
    /**
-   * 带参数重启
-   *
-   * @param shellName 没有后缀的脚本名
-   * @param args      传递给脚本的参数
-   * @throws FileNotFoundException 文件不存在异常
-   */
+        * 带参数重启
+        *
+        * @param shellName 没有后缀的脚本名
+        * @param args      传递给脚本的参数
+        * @throws FileNotFoundException 文件不存在异常
+        */
    void restart(String shellName, String... args) throws FileNotFoundException;
+   
+/**
+        * 停止
+        */
+   void stop();
+   ```
+   
+
+### 功能新增
+
+1. 支持properties配置脚本
+
+   ```java
+   |-- shell.properties 项目路径下的shell.properties文件
+   |-- config
+   	|-- shell.properties 项目路径config下的shell.properties
    ```
 
-   
