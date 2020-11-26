@@ -1,5 +1,6 @@
 package com.rukawa.boot.configuration;
 
+import com.rukawa.boot.interfaces.IShutdownHook;
 import com.rukawa.common.util.BeanUtil;
 import lombok.Data;
 import lombok.ToString;
@@ -8,10 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -22,6 +20,8 @@ public class ShellConfiguration {
     private String windows;
 
     private String linux;
+
+    private Set<IShutdownHook> shutdownHooks;
 
     private static ShellConfiguration shellConfiguration;
 
@@ -52,6 +52,7 @@ public class ShellConfiguration {
             }
         }
         shellConfiguration = new ShellConfiguration();
+        shellConfiguration.setShutdownHooks(new HashSet<>());
         if (BeanUtil.isEmpty(shellFile)) {
             shellConfiguration.setWindows(serverPath + shellWindows);
             shellConfiguration.setLinux(serverPath + shellLinux);

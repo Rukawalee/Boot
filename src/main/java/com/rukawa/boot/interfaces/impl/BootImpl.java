@@ -2,7 +2,9 @@ package com.rukawa.boot.interfaces.impl;
 
 import com.rukawa.boot.configuration.ShellConfiguration;
 import com.rukawa.boot.enumeration.OSEnum;
+import com.rukawa.boot.exception.ShutdownException;
 import com.rukawa.boot.interfaces.IBoot;
+import com.rukawa.boot.interfaces.IShutdownHook;
 import com.rukawa.common.util.BeanUtil;
 import com.rukawa.common.util.StringUtil;
 
@@ -63,6 +65,13 @@ public class BootImpl implements IBoot {
             throw new FileNotFoundException(fileName + " not found!");
         }
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            for (IShutdownHook iShutdownHook : shellConfiguration.getShutdownHooks()) {
+                try {
+                    iShutdownHook.store();
+                } catch (ShutdownException e) {
+                    e.printStackTrace();
+                }
+            }
             // sleep 500 ms
             try {
                 Thread.sleep(500);
