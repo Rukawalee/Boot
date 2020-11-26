@@ -60,20 +60,21 @@
         */
    void restart(String shellName, String... args) throws FileNotFoundException;
    
-/**
-        * 停止
-        */
+   /**
+       * 停止
+       */
    void stop();
    ```
-   
-
 ### 功能新增
 
 1. 支持properties配置脚本
 
    ```java
    |-- shell.properties 项目路径下的shell.properties文件
-   |-- config
-   	|-- shell.properties 项目路径config下的shell.properties
+      |-- config
+      	|-- shell.properties 项目路径config下的shell.properties
    ```
 
+2. 新增关闭钩子接口
+
+   > 将希望在系统关闭时执行的操作以实现 IShutdownHook ，将实现类加入到shutdownHooks就能在系统关闭时执行
