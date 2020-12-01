@@ -3,6 +3,8 @@ package com.rukawa.boot.configuration;
 import com.rukawa.boot.interfaces.IShutdownHook;
 import com.rukawa.common.util.BeanUtil;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.io.File;
@@ -13,15 +15,19 @@ import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-@Data
 @ToString
 public class ShellConfiguration {
 
+    @Getter
+    @Setter
     private String windows;
 
+    @Getter
+    @Setter
     private String linux;
 
-    private Set<IShutdownHook> shutdownHooks;
+    @Getter
+    private Set<IShutdownHook> shutdownHooks = new HashSet<>();
 
     private static ShellConfiguration shellConfiguration;
 
@@ -34,7 +40,6 @@ public class ShellConfiguration {
     private static final List<String> shellFiles = new ArrayList<>();
 
     private ShellConfiguration() {
-
     }
 
     private static void init() {
@@ -52,7 +57,9 @@ public class ShellConfiguration {
             }
         }
         shellConfiguration = new ShellConfiguration();
-        shellConfiguration.setShutdownHooks(new HashSet<>());
+        // require shell params configuration
+        ShellParamsConfiguration shellParamsConfiguration = ShellParamsConfiguration.getShellParamsConfiguration();
+        shellConfiguration.setShutdownHooks(shellParamsConfiguration);
         if (BeanUtil.isEmpty(shellFile)) {
             shellConfiguration.setWindows(serverPath + shellWindows);
             shellConfiguration.setLinux(serverPath + shellLinux);
@@ -66,6 +73,14 @@ public class ShellConfiguration {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void setShutdownHooks(Set<IShutdownHook> shutdownHooks) {
+        shellConfiguration.shutdownHooks.addAll(shutdownHooks);
+    }
+
+    public void setShutdownHooks(IShutdownHook shutdownHook) {
+        shellConfiguration.shutdownHooks.add(shutdownHook);
     }
 
     public static ShellConfiguration getShellConfiguration() {

@@ -10,7 +10,7 @@ public interface IBoot {
      * @param args 传递给脚本的参数
      * @throws FileNotFoundException 文件不存在异常
      */
-    void restartByParams(String... args) throws FileNotFoundException;
+    void restartByParams(Object... args) throws FileNotFoundException;
 
     /**
      * 带参数重启
@@ -19,7 +19,7 @@ public interface IBoot {
      * @param args      传递给脚本的参数
      * @throws FileNotFoundException 文件不存在异常
      */
-    void restart(String shellName, String... args) throws FileNotFoundException;
+    void restart(String shellName, Object... args) throws FileNotFoundException;
 
     /**
      * 停止

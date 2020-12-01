@@ -1,6 +1,7 @@
 package com.rukawa.boot.interfaces.impl;
 
 import com.rukawa.boot.configuration.ShellConfiguration;
+import com.rukawa.boot.configuration.ShellParamsConfiguration;
 import com.rukawa.boot.enumeration.OSEnum;
 import com.rukawa.boot.exception.ShutdownException;
 import com.rukawa.boot.interfaces.IBoot;
@@ -16,9 +17,16 @@ public class BootImpl implements IBoot {
 
     private ShellConfiguration shellConfiguration = ShellConfiguration.getShellConfiguration();
 
+    private ShellParamsConfiguration shellParamsConfiguration = ShellParamsConfiguration.getShellParamsConfiguration();
+
     @Override
-    public void restartByParams(String... args) throws FileNotFoundException {
+    public void restartByParams(Object... args) throws FileNotFoundException {
         OSEnum osEnum = OSEnum.getOSEnum(System.getProperty("os.name"));
+        if (BeanUtil.isEmpty(args)) {
+            args = shellParamsConfiguration.getParams();
+        } else {
+            shellParamsConfiguration.setParams(args);
+        }
         switch (osEnum) {
             case LINUX:
                 restart(StringUtil.substringByLastKey(shellConfiguration.getLinux(), ".sh"), args);
@@ -33,7 +41,7 @@ public class BootImpl implements IBoot {
     }
 
     @Override
-    public void restart(String shellName, String... args) throws FileNotFoundException {
+    public void restart(String shellName, Object... args) throws FileNotFoundException {
         OSEnum osEnum = OSEnum.getOSEnum(System.getProperty("os.name"));
         if (!BeanUtil.isEmpty(shellName)) {
             switch (osEnum) {
@@ -58,8 +66,12 @@ public class BootImpl implements IBoot {
                 break;
         }
         shellCommand.append(fileName)
-                .append(" ")
-                .append(BeanUtil.isEmpty(args) ? "" : String.join(" ", args));
+                .append(" ");
+        if (!BeanUtil.isEmpty(args)) {
+            for (Object arg : args) {
+                shellCommand.append(arg + " ");
+            }
+        }
         File file = new File(fileName);
         if (!file.exists()) {
             throw new FileNotFoundException(fileName + " not found!");
@@ -75,7 +87,7 @@ public class BootImpl implements IBoot {
             // sleep 500 ms
             try {
                 Thread.sleep(500);
-                Runtime.getRuntime().exec(shellCommand.toString());
+                Runtime.getRuntime().exec(shellCommand.toString().trim());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (IOException e) {
